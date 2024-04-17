@@ -4,28 +4,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      color: #333333;
+      padding: 0;
+      margin: 0;
+    }
+
+    a {
+      color: steelblue;
+      cursor: pointer;
+    }
+
+    #root-container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 10px;
+    }
+
+    p.info {
+      border-left: 5px solid green;
+      padding-left: 10px;
+    }
+
+    p.warning {
+      border-left: 5px solid red;
+      padding-left: 10px;
+    }
+
+    #root-layout th {
+      padding-top: 40px;
+      text-align: start;
+      text-decoration: underline;
+      font-size: 12pt;
+    }
+
+    #parameters {
+      width: min-content;
+      margin-bottom: 10px;
+    }
+
+    #parameters .note {
+      font-size: 8pt;
+      color: grey;
+      border-bottom: 1px solid grey;
+    }
+
+    #calculate {
+      background-color: rgb(191, 253, 191);
+      border-radius: 10px;
+      padding: 8px;
+    }
+
+    #calculate:hover {
+      background-color: rgb(144, 255, 144);
+    }
+
+    #calculate:active {
+      background-color: #eeeeee;
+    }
+
+    #rows-used {
+      font-size: 12pt;
+    }
+
+    #result {
+      background-color: #eeeeee;
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Параметри</h1>
-  <label>
-    Номер рядка:
-    <input id="row-number" name="field-name" type="number" value="0" />
-  </label>
-  <br />
-  <label>
-    Номер каналу:
-    <input id="rc-channel" name="field-name" type="number" value="11" />
-  </label>
-  <br /><br />
-  <input value="Застосувати" type="button" onclick="javascript:calculate()" />
+  <div id="root-container">
+    <h1>Помічник налаштування механізму подвійного скидання для INav</h1>
+    <p class="info">За допомогою цього помічника ви зможете легко модифікувати команди керування скидом, щоб помістити
+      його логіку у
+      вільне місце на вкладці Programming і задати потрібний канал керування.</p>
 
-  <h1>Зайняті рядки</h1>
-  <span id="rows-from">?</span> - <span id="rows-to">?</span>
+    <table id="root-layout">
+      <tr>
+        <th>Параметри</th>
+      </tr>
+      <tr>
+        <td>
+          <table id="parameters">
+            <tr>
+              <td>Номер&nbsp;рядка:</td>
+              <td>
+                <input id="row-number" name="field-name" type="number" value="0" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="note">
+                Номер рядка на вкладці Programming, в якому буде розміщено першу команду програми керування скидом.
+              </td>
+            </tr>
+            <tr>
+              <td>Номер&nbsp;рканалу:</td>
+              <td>
+                <input id="rc-channel" name="field-name" type="number" value="11" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="note">
+                Номер RC-каналу, який буде використовуватись для керування скидом.
+              </td>
+            </tr>
+          </table>
 
-  <h1>Команди</h1>
-  <div id="result">(Натисніть "Застосувати", щоб отримати команди INav CLI)</div>
+          <input id="calculate" value="Застосувати" type="button" onclick="javascript:calculate()" />
+        </td>
+      </tr>
+      <tr>
+        <th>Зайняті рядки</th>
+      </tr>
+      <tr>
+        <td>
+          <span id="rows-used">?</span>
+          <p class="warning"><b>ЗВЕРНІТЬ УВАГУ!</b> Щоб не зламати роботу інших функцій, що вже налаштовані на вкладці
+            Programming, цей
+            діапазон рядків має бути порожнім! Якщо він зайнятий, в параметрі "номер рядка" вкажіть рядок, за яким іде
+            достатня кількість вільного місця.</p>
+        </td>
+      </tr>
+      <tr>
+        <th>Команди</th>
+      </tr>
+      <tr>
+        <td>
+          <div id="result">(Натисніть "Застосувати", щоб отримати команди INav CLI)</div>
+          <a onclick="javascript:copyResult()">(скопіювати)</a>
+        </td>
+      </tr>
+    </table>
+  </div>
 
+
+
+  <!-- **************************** -->
+  <!-- ********** SCRIPT ********** -->
+  <!-- **************************** -->
   <script type="text/javascript">
     const ORIGINAL_LOGIC = `
 logic 57 1 -1 1 3 0 0 0 0
@@ -254,8 +376,7 @@ logic 63 1 61 18 0 5 4 62 0
     }
 
     function clearResults() {
-      document.getElementById('rows-from').innerText = '?';
-      document.getElementById('rows-to').innerText = '?';
+      document.getElementById('rows-used').innerText = '';
       document.getElementById('result').innerText = '(Натисніть "Застосувати", щоб отримати команди INav CLI)';
     }
 
@@ -317,12 +438,18 @@ logic 63 1 61 18 0 5 4 62 0
       move(parsed, startRowNum, rowsCount, rowNumber);
       const formatted = formatLogicDump(parsed);
 
-      document.getElementById('rows-from').innerText = rowNumber;
-      document.getElementById('rows-to').innerText = rowNumber + endRowNum - startRowNum;
+      document.getElementById('rows-used').innerText = `${rowNumber} - ${rowNumber + endRowNum - startRowNum}`;
       document.getElementById('result').innerText = formatted;
     }
 
+    function copyResult() {
+      const result = document.getElementById('result').innerText;
+      navigator.clipboard.writeText(result);
+      alert('Скопійовано в буфер обміну!');
+    }
+
     window.calculate = calculate;
+    window.copyResult = copyResult;
   </script>
 </body>
 
