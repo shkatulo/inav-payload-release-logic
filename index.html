@@ -10,21 +10,21 @@
   <h1>Параметри</h1>
   <label>
     Номер рядка:
-    <input id="row-number" name="field-name" type="number" min="0" max="57" value="0" />
+    <input id="row-number" name="field-name" type="number" value="0" />
   </label>
   <br />
   <label>
     Номер каналу:
-    <input id="rc-channel" name="field-name" type="number" min="5" max="16" value="11" />
+    <input id="rc-channel" name="field-name" type="number" value="11" />
   </label>
   <br /><br />
-  <input value="Submit" type="button" onclick="javascript:calculate()" />
+  <input value="Застосувати" type="button" onclick="javascript:calculate()" />
 
   <h1>Зайняті рядки</h1>
-  <span id="rows-from"></span> - <span id="rows-to"></span>
+  <span id="rows-from">?</span> - <span id="rows-to">?</span>
 
   <h1>Команди</h1>
-  <div id="result"></div>
+  <div id="result">(Натисніть "Застосувати", щоб отримати команди INav CLI)</div>
 
   <script type="text/javascript">
     const ORIGINAL_LOGIC = `
@@ -235,24 +235,86 @@ logic 63 1 61 18 0 5 4 62 0
       return rows
     }
 
+    function validateValue(value, rule) {
+      if (rule.isNumber) {
+        if (isNaN(value)) {
+          throw `Параметр "${rule.name}" не є числом`;
+        }
+
+        const numValue = rule.round ? Math.round(+value) : +value;
+        if (rule.min !== undefined && numValue < rule.min) {
+          throw `Параметр "${rule.name}" не може бути меншим за ${rule.min}`;
+        }
+        if (rule.max !== undefined && numValue > rule.max) {
+          throw `Параметр "${rule.name}" не може бути більшим за ${rule.max}`;
+        }
+        return numValue;
+      }
+      return value;
+    }
+
+    function clearResults() {
+      document.getElementById('rows-from').innerText = '?';
+      document.getElementById('rows-to').innerText = '?';
+      document.getElementById('result').innerText = '(Натисніть "Застосувати", щоб отримати команди INav CLI)';
+    }
+
     function calculate() {
-      // TODO: Validate values
+      clearResults();
+
+      // Pre-validate values
+      const rules = {
+        'rc-channel': { name: 'номер каналу', isNumber: true, round: true, min: 5, max: 16 },
+        'row-number': { name: 'номер рядка', isNumber: true, round: true },
+      };
+
+      const values = {};
+      let validationError = '';
+      Object.keys(rules).forEach(key => {
+        const value = document.getElementById(key).value;
+        const rule = rules[key];
+
+        try {
+          const validated = validateValue(value, rule);
+          values[key] = validated;
+        }
+        catch (error) {
+          validationError = error;
+        }
+      });
+
+      if (validationError) {
+        alert(validationError);
+        return;
+      }
 
       // Replace placeholders
       const replacements = ['rc-channel'];
       let logic = ORIGINAL_LOGIC;
       replacements.forEach(key => {
-        const value = document.getElementById(key).value;
+        const value = values[key];
         logic = logic.replaceAll(`{${key}}`, value);
       });
 
-      // Parse and move
+      // Parse
       const parsed = parseLogicDump(logic);
-      const rowNumber = +document.getElementById('row-number').value;
+      const rowNumber = values['row-number'];
       const startRowNum = parsed.findIndex(r => r);
       const endRowNum = parsed.length - [...parsed].reverse().findIndex(r => r) - 1;
+      const rowsCount = endRowNum - startRowNum + 1;
 
-      move(parsed, startRowNum, endRowNum - startRowNum + 1, rowNumber);
+      // Validate row number
+      try {
+        const rule = { name: 'номер рядка', isNumber: true, round: true, min: 0, max: 64 - rowsCount };
+        validateValue(values['row-number'], rule);
+      }
+      catch (error) {
+        alert(error);
+        return;
+      }
+
+      // Move
+      move(parsed, startRowNum, rowsCount, rowNumber);
       const formatted = formatLogicDump(parsed);
 
       document.getElementById('rows-from').innerText = rowNumber;
