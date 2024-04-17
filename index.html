@@ -148,9 +148,23 @@
                 вже використовуються цією чи іншою програмою.
               </td>
             </tr>
+            <tr>
+              <td>Очистити усі інші команди:</td>
+              <td>
+                <input id="reset-logic" name="field-name" type="checkbox" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" class="note">
+                Якщо увімкнено, то команди будуть ОЧИЩАТИ УСІ ПОПЕРЕДНІ НАЛАШТУВАННЯ на вкладці Programming. Це повністю
+                видалить інші програми, якщо вони налаштовані.
+              </td>
+            </tr>
           </table>
 
-          <p class="info">* Не варто змінювати номери GVAR змінних, якщо ви не використовуєте інших програм, окрім цієї. Також не потрібно вносити змін до них, якщо використовуються виключно мої програми: вони сумісні між собою.</p>
+          <p class="info">* Не варто змінювати номери GVAR змінних, якщо ви не використовуєте інших програм, окрім цієї.
+            Також не потрібно вносити змін до них, якщо використовуються виключно мої програми: вони сумісні між собою.
+          </p>
 
           <input id="calculate" value="Застосувати" type="button" onclick="javascript:calculate()" />
         </td>
@@ -242,7 +256,7 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
       return rows
     }
 
-    function formatLogicDump(rows, withDisabled = false) {
+    function formatLogicDump(rows, reset, withDisabled = false) {
       const parts = rows
         .map((row, index) =>
           row && (withDisabled || row.enabled) ? formatLogicRow(row, index) : null
@@ -250,7 +264,7 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
         .filter(r => r)
       return [
         "batch start",
-        "logic reset",
+        ...(reset ? ["logic reset"] : []),
         ...parts,
         "batch end",
       ].join("\n")
@@ -426,13 +440,14 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
         'row-number': { name: 'номер рядка', isNumber: true, round: true },
         'gvar-activation': { name: 'змінна активації скиду', isNumber: true, round: true, min: 0, max: 7 },
         'gvar-servo': { name: 'змінна керування сервою', isNumber: true, round: true, min: 0, max: 7 },
+        'reset-logic': { valueKey: 'checked' },
       };
 
       const values = {};
       let validationError = '';
       Object.keys(rules).forEach(key => {
-        const value = document.getElementById(key).value;
         const rule = rules[key];
+        const value = document.getElementById(key)[rule.valueKey ?? 'value'];
 
         try {
           const validated = validateValue(value, rule);
@@ -475,7 +490,7 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
 
       // Move
       move(parsed, startRowNum, rowsCount, rowNumber);
-      const formatted = formatLogicDump(parsed);
+      const formatted = formatLogicDump(parsed, values['reset-logic']);
 
       document.getElementById('rows-used').innerText = `${rowNumber} - ${rowNumber + endRowNum - startRowNum}`;
       document.getElementById('result').innerText = formatted;
@@ -484,7 +499,7 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
     function copyResult() {
       const result = document.getElementById('result').innerText;
       navigator.clipboard.writeText(result);
-      alert('Скопійовано в буфер обміну!');
+      setTimeout(() => alert('Скопійовано в буфер обміну!'), 500);
     }
 
     window.calculate = calculate;
