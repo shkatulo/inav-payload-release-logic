@@ -41,22 +41,26 @@
       padding-left: 10px;
     }
 
-    #root-layout th {
-      padding-top: 40px;
+    .section-header {
+      margin: 40px 0 10px 0;
       text-align: start;
       text-decoration: underline;
       font-size: 14pt;
     }
 
-    #parameters {
+    .parameters {
       width: min-content;
       margin-bottom: 10px;
     }
 
-    #parameters .note {
+    .parameters .note {
       font-size: 8pt;
       color: grey;
       border-bottom: 1px solid grey;
+    }
+
+    .additional-parameters {
+      margin-bottom: 10px;
     }
 
     #calculate {
@@ -95,102 +99,107 @@
       його логіку у
       вільне місце на вкладці Programming і задати потрібний канал керування.</p>
 
-    <table id="root-layout">
+
+
+
+
+    <div class="section-header">Параметри</div>
+
+    <table class="parameters">
       <tr>
-        <th>Параметри</th>
-      </tr>
-      <tr>
+        <td>Номер&nbsp;рядка:</td>
         <td>
-          <table id="parameters">
-            <tr>
-              <td>Номер&nbsp;рядка:</td>
-              <td>
-                <input id="row-number" name="field-name" type="number" value="57" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" class="note">
-                Номер рядка на вкладці Programming, в якому буде розміщено першу команду програми керування скидом.
-              </td>
-            </tr>
-            <tr>
-              <td>Номер&nbsp;каналу:</td>
-              <td>
-                <input id="rc-channel" name="field-name" type="number" value="11" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" class="note">
-                Номер RC-каналу, який буде використовуватись для керування скидом.
-              </td>
-            </tr>
-            <tr>
-              <td>* Номер&nbsp;змінної керування&nbsp;сервою:</td>
-              <td>
-                <input id="gvar-servo" name="field-name" type="number" value="5" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" class="note">
-                Номер змінної (GVAR), в яку буде записано положення серви. Не має перетинатись із змінними, що
-                вже використовуються цією чи іншою програмою.
-              </td>
-            </tr>
-            <tr>
-              <td>* Номер&nbsp;змінної активації&nbsp;скиду:</td>
-              <td>
-                <input id="gvar-activation" name="field-name" type="number" value="6" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" class="note">
-                Номер змінної (GVAR), де програма зберігатиме стан активації скиду. Не має перетинатись із змінними, що
-                вже використовуються цією чи іншою програмою.
-              </td>
-            </tr>
-            <tr>
-              <td>Очистити усі інші команди:</td>
-              <td>
-                <input id="reset-logic" name="field-name" type="checkbox" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" class="note">
-                Якщо увімкнено, то команди будуть ОЧИЩАТИ УСІ ПОПЕРЕДНІ НАЛАШТУВАННЯ на вкладці Programming. Це повністю
-                видалить інші програми, якщо вони налаштовані.
-              </td>
-            </tr>
-          </table>
-
-          <p class="info">* Не варто змінювати номери GVAR змінних, якщо ви не використовуєте інших програм, окрім цієї.
-            Також не потрібно вносити змін до них, якщо використовуються виключно мої програми: вони сумісні між собою.
-          </p>
-
-          <input id="calculate" value="Застосувати" type="button" onclick="javascript:calculate()" />
+          <input id="row-number" name="field-name" type="number" value="57" />
         </td>
       </tr>
       <tr>
-        <th>Зайняті рядки</th>
-      </tr>
-      <tr>
-        <td>
-          <span id="rows-used">?</span>
-          <p class="warning"><b>ЗВЕРНІТЬ УВАГУ!</b> Щоб не зламати роботу інших функцій, що вже налаштовані на вкладці
-            Programming, цей
-            діапазон рядків має бути порожнім! Якщо він зайнятий, в параметрі "номер рядка" вкажіть рядок, за яким іде
-            достатня кількість вільного місця.</p>
+        <td colspan="2" class="note">
+          Номер рядка на вкладці Programming, в якому буде розміщено першу команду програми керування скидом.
         </td>
       </tr>
       <tr>
-        <th>Команди</th>
+        <td>RC&#8209;канал:</td>
+        <td>
+          <input id="rc-channel" name="field-name" type="number" value="11" />
+        </td>
       </tr>
       <tr>
+        <td colspan="2" class="note">
+          Номер RC-каналу, який буде використовуватись для керування скидом.
+        </td>
+      </tr>
+      <tr>
+        <td>Очистити&nbsp;усі інші&nbsp;команди:</td>
         <td>
-          <div id="result">(Натисніть "Застосувати", щоб отримати команди INav CLI)</div>
-          <a onclick="javascript:copyResult()">(скопіювати)</a>
+          <input id="reset-logic" name="field-name" type="checkbox" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="note">
+          Якщо увімкнено, то команди будуть ОЧИЩАТИ УСІ ПОПЕРЕДНІ НАЛАШТУВАННЯ на вкладці Programming. Це повністю
+          видалить інші програми, якщо вони налаштовані.
         </td>
       </tr>
     </table>
+
+    <details class="additional-parameters">
+      <summary>Розширені налаштування</summary>
+
+      <table class="parameters">
+        <tr>
+          <td>* Змінна&nbsp;керування&nbsp;сервою:</td>
+          <td>
+            <input id="gvar-servo" name="field-name" type="number" value="5" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="note">
+            Номер змінної (GVAR), в яку буде записано положення серви. Не має перетинатись із змінними, що
+            вже використовуються цією чи іншою програмою.
+          </td>
+        </tr>
+        <tr>
+          <td>* Змінна&nbsp;активації&nbsp;скиду:</td>
+          <td>
+            <input id="gvar-activation" name="field-name" type="number" value="6" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="note">
+            Номер змінної (GVAR), де програма зберігатиме стан активації скиду. Не має перетинатись із змінними, що
+            вже використовуються цією чи іншою програмою.
+          </td>
+        </tr>
+      </table>
+
+      <p class="info">* Не варто змінювати номери GVAR змінних, якщо ви не використовуєте інших програм, окрім цієї.
+        Також не потрібно вносити змін до них, якщо використовуються виключно мої програми: вони сумісні між собою.
+      </p>
+
+    </details>
+
+    <input id="calculate" value="Застосувати" type="button" onclick="javascript:calculate()" />
+
+
+
+
+
+    <div class="section-header">Зайняті рядки</div>
+
+    <span id="rows-used">?</span>
+    <p class="warning"><b>ЗВЕРНІТЬ УВАГУ!</b> Щоб не порушити роботу інших функцій, що вже налаштовані на вкладці
+      Programming, цей
+      діапазон рядків має бути порожнім! Якщо він зайнятий, в параметрі "номер рядка" вкажіть рядок, за яким іде
+      достатня кількість вільного місця.</p>
+
+
+
+
+
+    <div class="section-header">Команди</div>
+
+    <div id="result">(Натисніть "Застосувати", щоб отримати команди INav CLI)</div>
+    <a onclick="javascript:copyResult()">(скопіювати)</a>
   </div>
 
 
@@ -431,12 +440,24 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
       document.getElementById('result').innerText = '(Натисніть "Застосувати", щоб отримати команди INav CLI)';
     }
 
+    function getQueryParam(paramName) {
+      const queryParamsStr = window.location.search.substring(1);
+      const queryParams = queryParamsStr.split("&");
+
+      for (i = 0; i < queryParams.length; i++) {
+        const param = queryParams[i].split("=");
+        if (param[0] == paramName) {
+          return param[1];
+        }
+      }
+    }
+
     function calculate() {
       clearResults();
 
       // Pre-validate values
       const rules = {
-        'rc-channel': { name: 'номер каналу', isNumber: true, round: true, min: 5, max: 16 },
+        'rc-channel': { name: 'RC-канал', isNumber: true, round: true, min: 5, max: 16 },
         'row-number': { name: 'номер рядка', isNumber: true, round: true },
         'gvar-activation': { name: 'змінна активації скиду', isNumber: true, round: true, min: 0, max: 7 },
         'gvar-servo': { name: 'змінна керування сервою', isNumber: true, round: true, min: 0, max: 7 },
@@ -501,6 +522,26 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
       navigator.clipboard.writeText(result);
       setTimeout(() => alert('Скопійовано в буфер обміну!'), 500);
     }
+
+    // Prefill fields
+    const prefillFields = {
+      'rc-channel': {},
+      'row-number': {},
+      'gvar-activation': {},
+      'gvar-servo': {},
+      'reset-logic': { valueKey: 'checked' },
+    };
+    const prefillKeys = Object.keys(prefillFields);
+    prefillKeys.forEach(key => {
+      const fieldInfo = prefillFields[key];
+      const value = getQueryParam(key);
+      if (value === undefined) return;
+      document.getElementById(key)[fieldInfo.valueKey ?? 'value'] = value;
+    });
+
+    // Calculate
+    const pCalculate = getQueryParam('calculate');
+    if (pCalculate === 'true') calculate();
 
     window.calculate = calculate;
     window.copyResult = copyResult;
