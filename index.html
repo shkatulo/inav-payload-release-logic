@@ -501,7 +501,8 @@ logic 6 1 4 18 0 {gvar-servo} 4 5 0
 
       // Validate row number
       try {
-        const rule = { name: 'номер рядка', isNumber: true, round: true, min: 0, max: 64 - rowsCount };
+        const maxLogicConditions = getQueryParam('maxLC') || 64;
+        const rule = { name: 'номер рядка', isNumber: true, round: true, min: 0, max: maxLogicConditions - rowsCount };
         validateValue(values['row-number'], rule);
       }
       catch (error) {
