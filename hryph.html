@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      color: #333333;
+      padding-bottom: 50px;
+    }
+
+    a {
+      color: steelblue;
+      cursor: pointer;
+    }
+
+    textarea,
+    input.text,
+    input[type="text"],
+    input[type="button"],
+    input[type="submit"],
+    .input-checkbox {
+      -webkit-appearance: none;
+    }
+
+    #root-container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    p.info {
+      border-left: 5px solid green;
+      padding-left: 10px;
+    }
+
+    p.warning {
+      border-left: 5px solid red;
+      padding-left: 10px;
+    }
+
+    .section-header {
+      margin: 40px 0 10px 0;
+      text-align: start;
+      text-decoration: underline;
+      font-size: 14pt;
+    }
+
+    .parameters {
+      width: min-content;
+      margin-bottom: 10px;
+    }
+
+    .parameters .note {
+      font-size: 8pt;
+      color: grey;
+      border-bottom: 1px solid grey;
+    }
+
+    .additional-parameters {
+      margin-bottom: 10px;
+    }
+
+    #calculate {
+      color: #333333;
+      background-color: rgb(191, 253, 191);
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 12pt;
+    }
+
+    #calculate:hover {
+      background-color: rgb(144, 255, 144);
+    }
+
+    #calculate:active {
+      background-color: #eeeeee;
+    }
+
+    #rows-used {
+      font-size: 12pt;
+    }
+
+    #result {
+      background-color: #eeeeee;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root-container">
+    <h1>Помічник налаштування чотирипозиційного механізму скидання ГРИФ-1 для INav</h1>
+    <p class="info">За допомогою цього помічника ви зможете легко модифікувати команди керування скидом, щоб помістити
+      його логіку у
+      вільне місце на вкладці Programming і задати потрібний канал керування.</p>
+
+
+
+
+
+    <div class="section-header">Параметри</div>
+
+    <table class="parameters">
+      <tr>
+        <td>Номер&nbsp;рядка:</td>
+        <td>
+          <input id="row-number" name="field-name" type="number" value="0" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="note">
+          Номер рядка на вкладці Programming, в якому буде розміщено першу команду програми керування скидом.
+        </td>
+      </tr>
+      <tr>
+        <td>RC&#8209;канал:</td>
+        <td>
+          <input id="rc-channel" name="field-name" type="number" value="11" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="note">
+          Номер RC-каналу, який буде використовуватись для керування скидом.
+        </td>
+      </tr>
+      <tr>
+        <td>Очистити&nbsp;усі інші&nbsp;команди:</td>
+        <td>
+          <input id="reset-logic" name="field-name" type="checkbox" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" class="note">
+          Якщо увімкнено, то команди будуть ОЧИЩАТИ УСІ ПОПЕРЕДНІ НАЛАШТУВАННЯ на вкладці Programming. Це повністю
+          видалить інші програми, якщо вони налаштовані.
+        </td>
+      </tr>
+    </table>
+
+    <details class="additional-parameters">
+      <summary>Розширені налаштування</summary>
+
+      <table class="parameters">
+        <tr>
+          <td>*&nbsp;Змінна&nbsp;керування сервою 1:</td>
+          <td>
+            <input id="gvar-servo-1" name="field-name" type="number" value="1" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="note">
+            Номер змінної (GVAR), в яку буде записано положення серви 1. Не має перетинатись із змінними, що
+            вже використовуються цією чи іншою програмою.
+          </td>
+        </tr>
+        <tr>
+          <td>*&nbsp;Змінна&nbsp;керування сервою 2:</td>
+          <td>
+            <input id="gvar-servo-2" name="field-name" type="number" value="2" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="note">
+            Номер змінної (GVAR), в яку буде записано положення серви 2. Не має перетинатись із змінними, що
+            вже використовуються цією чи іншою програмою.
+          </td>
+        </tr>
+        <tr>
+          <td>*&nbsp;Змінна&nbsp;активації секцій:</td>
+          <td>
+            <input id="gvar-activation" name="field-name" type="number" value="0" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="note">
+            Номер змінної (GVAR), де програма зберігатиме стан скиду. Не має перетинатись із змінними, що
+            вже використовуються цією чи іншою програмою.
+          </td>
+        </tr>
+      </table>
+
+      <p class="info">* Не варто змінювати номери GVAR змінних, якщо ви не використовуєте інших програм, окрім цієї.
+        Також не потрібно вносити змін до них, якщо використовуються виключно мої програми: вони сумісні між собою.
+      </p>
+
+    </details>
+
+    <input id="calculate" value="Застосувати" type="button" onclick="javascript:calculate()" />
+
+
+
+
+
+    <div class="section-header">Зайняті рядки</div>
+
+    <span id="rows-used">?</span>
+    <p class="warning"><b>ЗВЕРНІТЬ УВАГУ!</b> Щоб не порушити роботу інших функцій, що вже налаштовані на вкладці
+      Programming, цей
+      діапазон рядків має бути порожнім! Якщо він зайнятий, в параметрі "номер рядка" вкажіть рядок, за яким іде
+      достатня кількість вільного місця.</p>
+
+
+
+
+
+    <div class="section-header">Команди</div>
+
+    <div id="result">(Натисніть "Застосувати", щоб отримати команди INav CLI)</div>
+    <a onclick="javascript:copyResult()">(скопіювати)</a>
+  </div>
+
+
+
+  <!-- **************************** -->
+  <!-- ********** SCRIPT ********** -->
+  <!-- **************************** -->
+  <script type="text/javascript">
+    const ORIGINAL_LOGIC = `
+logic 0 1 -1 12 3 0 0 0 0
+logic 1 1 -1 48 4 0 0 1000 0
+logic 2 1 -1 50 1 {rc-channel} 0 400 0
+logic 3 1 -1 7 4 1 4 2 0
+logic 4 1 3 19 0 {gvar-activation} 0 1 0
+logic 5 1 -1 40 5 {gvar-activation} 0 5 0
+logic 6 1 -1 1 4 5 0 1 0
+logic 7 1 -1 1 4 5 0 2 0
+logic 8 1 -1 1 4 5 0 3 0
+logic 9 1 -1 1 4 5 0 4 0
+logic 10 1 -1 18 0 {gvar-servo-1} 0 0 0
+logic 11 1 6 18 0 {gvar-servo-1} 0 -500 0
+logic 12 1 8 18 0 {gvar-servo-1} 0 500 0
+logic 13 1 -1 18 0 {gvar-servo-2} 0 0 0
+logic 14 1 7 18 0 {gvar-servo-2} 0 -500 0
+logic 15 1 9 18 0 {gvar-servo-2} 0 500 0
+    `;
+
+    const OPERAND_CONST = 0
+    const OPERAND_LC = 4
+
+    function parseLogicRow(row) {
+      const parts = row.trim().split(" ")
+      if (parts.length !== 10 || parts[0] !== "logic") return
+      return {
+        index: +parts[1],
+        row: {
+          enabled: +parts[2],
+          activatorId: +parts[3],
+          operation: +parts[4],
+          operandAType: +parts[5],
+          operandAValue: +parts[6],
+          operandBType: +parts[7],
+          operandBValue: +parts[8],
+          flags: +parts[9]
+        }
+      }
+    }
+
+    function formatLogicRow(row, index) {
+      return (
+        `logic ${index} ${row.enabled} ${row.activatorId} ${row.operation} ` +
+        `${row.operandAType} ${row.operandAValue} ${row.operandBType} ${row.operandBValue} ${row.flags}`
+      )
+    }
+
+    function parseLogicDump(dump) {
+      const rows = [];
+
+      const parts = dump.split("\n")
+      parts.map(part => {
+        const { row, index } = parseLogicRow(part) ?? {}
+        if (row && index !== undefined) rows[index] = row
+      })
+
+      const keys = Object.keys(rows);
+      const length = +keys[keys.length - 1] + 1;
+
+      for (let i = 0; i < length; i++) {
+        rows[i] = rows[i] ?? null // Replace missing elements by nulls
+      }
+
+      return rows
+    }
+
+    function formatLogicDump(rows, reset, withDisabled = false) {
+      const parts = rows
+        .map((row, index) =>
+          row && (withDisabled || row.enabled) ? formatLogicRow(row, index) : null
+        )
+        .filter(r => r)
+      return [
+        "batch start",
+        ...(reset ? ["logic reset"] : []),
+        ...parts,
+        "batch end",
+      ].join("\n")
+    }
+
+    // ***** Operations *****
+    function updateRow(row, offset, fromIndex, toIndex) {
+      // Shift activator
+      if (
+        !row.activatorRefUpdated &&
+        row.activatorId > -1 &&
+        row.activatorId >= fromIndex &&
+        (toIndex === undefined || row.activatorId <= toIndex)
+      ) {
+        if (offset) row.activatorId += offset
+        else {
+          console.warn("Deleted activator condition", row)
+          row.activatorId = -1
+        }
+        row.activatorRefUpdated = true
+      }
+
+      // Shift operand A
+      if (
+        !row.operandARefUpdated &&
+        row.operandAType === OPERAND_LC &&
+        row.operandAValue >= fromIndex &&
+        (toIndex === undefined || row.operandAValue <= toIndex)
+      ) {
+        if (offset) row.operandAValue += offset
+        else {
+          console.warn("Deleted operand A reference", row)
+          row.operandAType = OPERAND_CONST
+          row.operandAValue = -111111
+        }
+        row.operandARefUpdated = true
+      }
+
+      // Shift operand B
+      if (
+        !row.operandBRefUpdated &&
+        row.operandBType === OPERAND_LC &&
+        row.operandBValue >= fromIndex &&
+        (toIndex === undefined || row.operandBValue <= toIndex)
+      ) {
+        if (offset) row.operandBValue += offset
+        else {
+          console.warn("Deleted operand B reference", row)
+          row.operandBType = OPERAND_CONST
+          row.operandBValue = -111111
+        }
+        row.operandBRefUpdated = true
+      }
+    }
+
+    function resetUpdatedState(rows) {
+      rows.forEach(row => {
+        if (row) {
+          row.activatorRefUpdated = false
+          row.operandARefUpdated = false
+          row.operandBRefUpdated = false
+        }
+      })
+    }
+
+    function insert(rows, index, count) {
+      resetUpdatedState(rows)
+
+      // Offset refs
+      rows.forEach(row => {
+        if (row) updateRow(row, count, index)
+      })
+
+      // Insert
+      rows.splice(index, 0, ...new Array(count).fill(null))
+
+      return rows
+    }
+
+    function remove(rows, index, count) {
+      resetUpdatedState(rows)
+
+      // Remove refs
+      const to = index + count - 1
+      rows.forEach(row => {
+        if (row) updateRow(row, 0, index, to)
+      })
+
+      // Offset refs
+      const fr = index + count
+      rows.forEach(row => {
+        if (row) updateRow(row, -count, fr)
+      })
+
+      // Remove
+      rows.splice(index, count)
+
+      return rows
+    }
+
+    function move(rows, indexFrom, count, indexTo) {
+      const offset = indexTo - indexFrom
+      if (offset === 0) return rows;
+
+      resetUpdatedState(rows)
+
+      // Offset refs to moved block
+      const to = indexFrom + count - 1
+      rows.forEach(row => {
+        if (row) updateRow(row, offset, indexFrom, to)
+      })
+
+      // Offset refs to pushed items
+      if (offset > 0) {
+        const fr = indexFrom + count
+        const to = fr + offset - 1
+        rows.forEach(row => {
+          if (row) updateRow(row, -count, fr, to)
+        })
+      } else {
+        const fr = indexFrom + offset
+        const to = indexFrom - 1
+        rows.forEach(row => {
+          if (row) updateRow(row, count, fr, to)
+        })
+      }
+
+      // Cut items
+      const cut = rows.splice(indexFrom, count)
+
+      // Extend array, if needed
+      if (rows.length < indexTo) {
+        const empty = new Array(indexTo - rows.length).fill(null)
+        console.log(empty)
+        rows.push(...empty)
+      }
+
+      // Insert at new place
+      rows.splice(indexTo, 0, ...cut)
+
+      return rows
+    }
+
+    function validateValue(value, rule) {
+      if (rule.isNumber) {
+        if (isNaN(value)) {
+          throw `Параметр "${rule.name}" не є числом`;
+        }
+
+        const numValue = rule.round ? Math.round(+value) : +value;
+        if (rule.min !== undefined && numValue < rule.min) {
+          throw `Параметр "${rule.name}" не може бути меншим за ${rule.min}`;
+        }
+        if (rule.max !== undefined && numValue > rule.max) {
+          throw `Параметр "${rule.name}" не може бути більшим за ${rule.max}`;
+        }
+        return numValue;
+      }
+      return value;
+    }
+
+    function clearResults() {
+      document.getElementById('rows-used').innerText = '';
+      document.getElementById('result').innerText = '(Натисніть "Застосувати", щоб отримати команди INav CLI)';
+    }
+
+    function getQueryParam(paramName) {
+      const queryParamsStr = window.location.search.substring(1);
+      const queryParams = queryParamsStr.split("&");
+
+      for (i = 0; i < queryParams.length; i++) {
+        const param = queryParams[i].split("=");
+        if (param[0] == paramName) {
+          return param[1];
+        }
+      }
+    }
+
+    function calculate() {
+      clearResults();
+
+      // Pre-validate values
+      const rules = {
+        'rc-channel': { name: 'RC-канал', isNumber: true, round: true, min: 5, max: 16 },
+        'row-number': { name: 'номер рядка', isNumber: true, round: true },
+        'gvar-activation': { name: 'змінна активації скиду', isNumber: true, round: true, min: 0, max: 7 },
+        'gvar-servo-1': { name: 'змінна керування сервою 1', isNumber: true, round: true, min: 0, max: 7 },
+        'gvar-servo-2': { name: 'змінна керування сервою 2', isNumber: true, round: true, min: 0, max: 7 },
+        'reset-logic': { valueKey: 'checked' },
+      };
+
+      const values = {};
+      let validationError = '';
+      Object.keys(rules).forEach(key => {
+        const rule = rules[key];
+        const value = document.getElementById(key)[rule.valueKey ?? 'value'];
+
+        try {
+          const validated = validateValue(value, rule);
+          values[key] = validated;
+        }
+        catch (error) {
+          validationError = error;
+        }
+      });
+
+      if (validationError) {
+        alert(validationError);
+        return;
+      }
+
+      // Replace placeholders
+      const replacements = ['rc-channel', 'gvar-activation', 'gvar-servo-1', 'gvar-servo-2'];
+      let logic = ORIGINAL_LOGIC;
+      replacements.forEach(key => {
+        const value = values[key];
+        logic = logic.replaceAll(`{${key}}`, value);
+      });
+
+      // Parse
+      const parsed = parseLogicDump(logic);
+      const rowNumber = values['row-number'];
+      const startRowNum = parsed.findIndex(r => r);
+      const endRowNum = parsed.length - [...parsed].reverse().findIndex(r => r) - 1;
+      const rowsCount = endRowNum - startRowNum + 1;
+
+      // Validate row number
+      try {
+        const maxLogicConditions = getQueryParam('maxLC') || 64;
+        const rule = { name: 'номер рядка', isNumber: true, round: true, min: 0, max: maxLogicConditions - rowsCount };
+        validateValue(values['row-number'], rule);
+      }
+      catch (error) {
+        alert(error);
+        return;
+      }
+
+      // Move
+      move(parsed, startRowNum, rowsCount, rowNumber);
+      const formatted = formatLogicDump(parsed, values['reset-logic']);
+
+      document.getElementById('rows-used').innerText = `${rowNumber} - ${rowNumber + endRowNum - startRowNum}`;
+      document.getElementById('result').innerText = formatted;
+    }
+
+    function copyResult() {
+      const result = document.getElementById('result').innerText;
+      navigator.clipboard.writeText(result);
+      setTimeout(() => alert('Скопійовано в буфер обміну!'), 500);
+    }
+
+    // Prefill fields
+    const prefillFields = {
+      'rc-channel': {},
+      'row-number': {},
+      'gvar-activation': {},
+      'gvar-servo-1': {},
+      'gvar-servo-2': {},
+      'reset-logic': { valueKey: 'checked' },
+    };
+    const prefillKeys = Object.keys(prefillFields);
+    prefillKeys.forEach(key => {
+      const fieldInfo = prefillFields[key];
+      const value = getQueryParam(key);
+      if (value === undefined) return;
+      document.getElementById(key)[fieldInfo.valueKey ?? 'value'] = value;
+    });
+
+    // Calculate
+    const pCalculate = getQueryParam('calculate');
+    if (pCalculate === 'true') calculate();
+
+    window.calculate = calculate;
+    window.copyResult = copyResult;
+  </script>
+</body>
+
+</html>
